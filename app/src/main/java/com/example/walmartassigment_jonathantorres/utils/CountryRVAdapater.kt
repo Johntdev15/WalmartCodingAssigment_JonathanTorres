@@ -12,6 +12,10 @@ class CountryRVAdapter : RecyclerView.Adapter<CountryRVAdapter.CountryVH>() {
 
     private val items = mutableListOf<Country>()
 
+    init { setHasStableIds(true) }
+
+    override fun getItemId(position: Int) = items[position].code.hashCode().toLong()
+
     fun setItems(newItems: List<Country>) {
         items.clear()
         items.addAll(newItems)
@@ -31,13 +35,11 @@ class CountryRVAdapter : RecyclerView.Adapter<CountryRVAdapter.CountryVH>() {
     inner class CountryVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val nameText: TextView = itemView.findViewById(R.id.nameText)
         private val capitalText: TextView = itemView.findViewById(R.id.capitalText)
-        private val regionText: TextView = itemView.findViewById(R.id.regionText)
         private val codeText: TextView = itemView.findViewById(R.id.codeText)
 
         fun bind(item: Country) {
-            nameText.text = item.name
+            nameText.text = item.name + ", " + (item.region?.takeIf { it.isNotBlank() } ?: "N/A")
             capitalText.text = (item.capital?.takeIf { it.isNotBlank() } ?: "N/A")
-            regionText.text  = ", " + (item.region?.takeIf { it.isNotBlank() } ?: "N/A")
             codeText.text    = item.code
         }
     }

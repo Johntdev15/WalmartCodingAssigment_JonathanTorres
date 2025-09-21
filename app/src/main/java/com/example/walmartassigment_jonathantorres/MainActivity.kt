@@ -1,6 +1,7 @@
 package com.example.walmartassigment_jonathantorres
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -29,7 +30,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var errorText: TextView
     private val vm: CountriesViewModel by viewModels()
     private val adapter = CountryRVAdapter()
-
+    private var rvState: Parcelable? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -51,6 +52,12 @@ class MainActivity : ComponentActivity() {
                     progress.visibility = View.GONE
                     errorText.visibility = View.GONE
                     adapter.setItems(state.data)
+                    recycler.post {
+                        rvState?.let {
+                            recycler.layoutManager?.onRestoreInstanceState(it)
+                            rvState = null
+                        }
+                    }
                 }
                 is ViewsStates.Error -> {
                     progress.visibility = View.GONE
@@ -61,5 +68,16 @@ class MainActivity : ComponentActivity() {
         }
 
         vm.loadCountries()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        rvState = recycler.layoutManager?.onSaveInstanceState()
+        outState.putParcelable("rv_state", rvState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        rvState = savedInstanceState.getParcelable("rv_state")
     }
 }
