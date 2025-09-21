@@ -3,23 +3,12 @@ package com.example.walmartassigment_jonathantorres
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.walmartassigment_jonathantorres.data.ViewsStates
-import com.example.walmartassigment_jonathantorres.ui.theme.WalmartAssigment_JonathanTorresTheme
 import com.example.walmartassigment_jonathantorres.utils.CountryRVAdapter
 import com.example.walmartassigment_jonathantorres.viewmodel.CountriesViewModel
 
@@ -71,6 +60,7 @@ class MainActivity : ComponentActivity() {
         outState.putParcelable("rv_state", rvState)
     }
 
+    @Suppress("DEPRECATION")
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         rvState = savedInstanceState.getParcelable("rv_state")
