@@ -3,9 +3,12 @@ package com.example.walmartassigment_jonathantorres
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
+import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
+import androidx.core.widget.addTextChangedListener
+import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.walmartassigment_jonathantorres.data.ViewsStates
@@ -16,6 +19,7 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var recycler: RecyclerView
     private lateinit var errorText: TextView
+    private lateinit var search: EditText
     private val vm: CountriesViewModel by viewModels()
     private val adapter = CountryRVAdapter()
     private var rvState: Parcelable? = null
@@ -25,11 +29,12 @@ class MainActivity : ComponentActivity() {
 
         recycler = findViewById(R.id.recycler_RV)
         errorText = findViewById(R.id.errorText_TV)
+        search = findViewById(R.id.search_ET)
 
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
 
-        vm.state.observe(this) { state ->
+        vm.stateToObserve.observe(this) { state ->
             when (state) {
                 is ViewsStates.Loading -> {
                     errorText.visibility = View.GONE
@@ -51,6 +56,21 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        search.setText(vm.query.value.orEmpty())
+
+        search.doOnTextChanged { text, _, _, _ ->
+            vm.setQuery(text?.toString().orEmpty())
+        }
+
+        vm.filteredCountries.observe(this) { list ->
+            adapter.setItems(list)
+        }
+
+        search.addTextChangedListener { text ->
+            vm.setQuery(text?.toString().orEmpty())
+        }
+
+
         vm.loadCountries()
     }
 
@@ -58,6 +78,8 @@ class MainActivity : ComponentActivity() {
         super.onSaveInstanceState(outState)
         rvState = recycler.layoutManager?.onSaveInstanceState()
         outState.putParcelable("rv_state", rvState)
+        outState.putString("query_state", vm.query.value.orEmpty())
+
     }
 
     @Suppress("DEPRECATION")
